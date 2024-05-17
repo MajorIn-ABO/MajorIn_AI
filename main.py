@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from paddleocr import PaddleOCR
 import cv2
 import numpy as np
@@ -7,6 +8,17 @@ import json
 
 # FastAPI 인스턴스 생성
 app = FastAPI(title="OCR Service API")
+
+# CORS 미들웨어 추가
+app.add_middleware(
+    CORSMiddleware,
+    #특정 도메인만 허용하게 하려면 프론트엔드 배포 사이트 주소만 넣는다
+    #allow_origins=["http://localhost:3000"]
+    allow_origins=["*"], # 허용할 도메인 목록 # 모든 도메인에서의 요청 허용
+    allow_credentials=True, # 자격 증명(쿠키, HTTP 인증)을 포함한 요청을 허용할지 여부 #허용
+    allow_methods=["*"], # 허용할 HTTP 메서드 목록. # 모든 메서드를 허용
+    allow_headers=["*"], # 허용할 HTTP 헤더 목록. # 모든 헤더를 허용
+)
 
 # 얼굴 인식을 위한 OpenCV 모델 로드
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
