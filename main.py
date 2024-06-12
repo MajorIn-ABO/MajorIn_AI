@@ -20,6 +20,15 @@ app.add_middleware(
     allow_headers=["*"], # 허용할 HTTP 헤더 목록. # 모든 헤더를 허용
 )
 
+import logging
+# uvicorn, paddleocr 로거 설정
+for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access", "paddleocr"]:
+    logger = logging.getLogger(logger_name)
+    logger.handlers = []   # 모든 기존 핸들러 제거
+    logger.addHandler(logging.NullHandler())  # 로그 이벤트 무시 핸들러 추가
+    logger.propagate = False  # 상위 로거로 이벤트 전파 중지
+
+
 # 얼굴 인식을 위한 OpenCV 모델 로드
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
@@ -28,8 +37,16 @@ class OCRService:
         # 한국어 OCR을 위한 PaddleOCR 초기화
         self.ocr = PaddleOCR(use_angle_cls=False, lang='korean')
 
+    '''
+    def detect_edits(self, img_array):
+        # 엣지 검출을 위해 Canny 엣지 디텍터 사용
+        edges = cv2.Canny(img_array, 100, 200)
+        # 엣지 픽셀의 비율 계산
+        edge_ratio = np.sum(edges > 0) / (edges.shape[0] * edges.shape[1])
+        # 과도한 편집이 감지된 경우 True 반환
+        return edge_ratio > 0.05  #!! 임계값 조정 가능
+    '''
     def preprocess_image(self, img_array):
-        
         # 이미지 이진화 및 전처리
         gray = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
         _, binary = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
@@ -60,7 +77,7 @@ class OCRService:
 
         # 텍스트 인식
         result = self.ocr.ocr(preprocessed_img, cls=True)
-
+        
         # 인식된 텍스트 추출 및 결합
         extracted_texts = [word[1][0] for line in result for word in line]
         text = "\n".join(extracted_texts)
@@ -87,6 +104,15 @@ class OCRService:
             if student_id_pattern.match(line) and not student_id:
                 # student_id를 정수로 변환하여 저장
                 student_id = int(line)  # 숫자로 변환
+        '''        
+        # 포토샵 감지
+        if self.detect_edits(img_array):
+            # 포토샵으로 인한 결과
+            # return json.dumps({"is_student_id_card": False, "reason": "Image possibly edited"}, ensure_ascii=False, indent=4)
+            result_dict = {
+                "is_student_id_card" : False
+            }
+        '''
 
         if all([user_name, school_name, major_name, student_id]):
         # 결과 딕셔너리 생성
