@@ -22,7 +22,7 @@ app.add_middleware(
 
 import logging
 # uvicorn, paddleocr 로거 설정
-for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access", "paddleocr"]:
+for logger_name in ["uvicorn", "uvicorn.error", "uvicorn.access", "paddleocr", "ppocr"]:
     logger = logging.getLogger(logger_name)
     logger.handlers = []   # 모든 기존 핸들러 제거
     logger.addHandler(logging.NullHandler())  # 로그 이벤트 무시 핸들러 추가
