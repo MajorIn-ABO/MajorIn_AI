@@ -1,8 +1,8 @@
 # 사회적 교류 지원을 위한 멘토링 제공 학과 중심 커뮤니티 플랫폼
+## 해당 Repository는 회원가입 시 업로드하는 학생증 이미지를 판별하고 OCR 기능을 수행하는 AI 모델을 관리합니다.
 
-![image](https://github.com/user-attachments/assets/9b403d90-0795-4146-8855-eba495232b2a)
-
-해당 Repository는 회원가입 시 업로드하는 학생증 이미지를 판별하고 OCR 기능을 수행하는 AI 모델을 관리합니다.
+**<아키텍처 설계>**
+![image](https://github.com/user-attachments/assets/5f6f13c2-8f15-4fde-bd65-66e1132381e7)
 
 **<진행 흐름>**
 - 학생증이 맞는 경우 학생증에서 이름, 학교, 학과, 학번과 같은 필요한 텍스트만 자동으로 웹페이지에 출력한다.
